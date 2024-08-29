@@ -22,55 +22,17 @@ class Header extends StatelessWidget {
           ),
         if (!Responsive.isMobile(context))
           Text(
-            "Dashboard",
+            "NEISD Dashboard",
             style: Theme.of(context).textTheme.titleLarge,
           ),
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
         Expanded(child: SearchField()),
-        ProfileCard()
+        InteractiveDropDownCard() // The interactive profile dropdown card
       ],
     );
   }
 }
-
-class ProfileCard extends StatelessWidget {
-  const ProfileCard({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: defaultPadding),
-      padding: EdgeInsets.symmetric(
-        horizontal: defaultPadding,
-        vertical: defaultPadding / 2,
-      ),
-      decoration: BoxDecoration(
-        color: secondaryColor,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Row(
-        children: [
-          Image.asset(
-            "assets/images/profile_pic.png",
-            height: 38,
-          ),
-          if (!Responsive.isMobile(context))
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
-              child: Text("Angelina Jolie"),
-            ),
-          Icon(Icons.keyboard_arrow_down),
-        ],
-      ),
-    );
-  }
-}
-
 class SearchField extends StatelessWidget {
   const SearchField({
     Key? key,
@@ -101,5 +63,103 @@ class SearchField extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class InteractiveDropDownCard extends StatefulWidget {
+  @override
+  _InteractiveDropDownCardState createState() =>
+      _InteractiveDropDownCardState();
+}
+
+class _InteractiveDropDownCardState extends State<InteractiveDropDownCard> {
+  OverlayEntry? _overlayEntry;
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (!isExpanded) {
+            _showOverlay(context);
+          } else {
+            _removeOverlay();
+          }
+          isExpanded = !isExpanded;
+        });
+      },
+      child: Container(
+        margin: EdgeInsets.only(left: defaultPadding),
+        padding: EdgeInsets.symmetric(
+          horizontal: defaultPadding,
+          vertical: defaultPadding / 2,
+        ),
+        decoration: BoxDecoration(
+          color: secondaryColor,
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Row(
+          children: [
+            Image.asset(
+              "assets/images/profile_pic.png",
+              height: 38,
+            ),
+            if (!Responsive.isMobile(context))
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
+                child: Text("Jacob suxs"),
+              ),
+            Icon(isExpanded
+                ? Icons.keyboard_arrow_down
+                : Icons.keyboard_arrow_up),
+          ],
+        ),
+      ),
+    );
+  }
+
+ void _showOverlay(BuildContext context) {
+  final overlay = Overlay.of(context);
+  _overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      top: 80, // Adjust the position relative to the screen
+      right: 20, // Aligning to the right of the screen
+      child: Material(
+        elevation: 5,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          width: 200,
+          padding: EdgeInsets.all(defaultPadding),
+          decoration: BoxDecoration(
+            color: secondaryColor.withOpacity(0.9),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            border: Border.all(color: Colors.white10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Account Info",
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              SizedBox(height: 10),
+              Text("Settings",
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              SizedBox(height: 10),
+              Text("Logout",
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+  overlay.insert(_overlayEntry!); // No null-aware operator needed here
+}
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 }
